@@ -1,43 +1,43 @@
-const mongoose =  require('mongoose');
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const joi = require("joi");
 const passwordComplexity = require("joi-password-complexity");
 
 const userSchema = new mongoose.Schema({
-name:{type: String, required: true},
-email:{type: String, required: true, unique: true},
-password:{type: String, required: true},
-gender:{type: String, required: true},
-month:{type: String, required: true},
-date:{type: String, required: true},
-year:{type: String, required: true},
-likedSongs:{type: [String], required:[]},
-playlists:{type: [String], required:[]},
-isAdmin:{type: Boolean, required: False}
-})
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  gender: { type: String, required: true },
+  month: { type: String, required: true },
+  date: { type: String, required: true },
+  year: { type: String, required: true },
+  likedSongs: { type: [String], required: [] },
+  playlists: { type: [String], required: [] },
+  isAdmin: { type: Boolean, required: False },
+});
 
 userSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign(
-    {_id:this._id, name:this.name, isAdmin: this.isAdmin},
+  const token = jwt.sign(
+    { _id: this._id, name: this.name, isAdmin: this.isAdmin },
     process.env.JWTPRIVATEKEY,
-    {expiresIn: "7d"}
-    )
-    return token;
-}
+    { expiresIn: "7d" }
+  );
+  return token;
+};
 
 const validate = (user) => {
-    const schema = joi.object({
-        name:Joi.string().min(5).max(10).required(),
-        email:Joi.string().email().required(),
-        password: passwordComplexity().required(),
-        month:Joi.string().required(),
-        date:Joi.string().required(),
-        year:Joi.string().required(),
-        gender:Joi.string().valid("male", "female").required()
-    })
-return schema.validate(user)
-}
+  const schema = joi.object({
+    name: Joi.string().min(5).max(10).required(),
+    email: Joi.string().email().required(),
+    password: passwordComplexity().required(),
+    month: Joi.string().required(),
+    date: Joi.string().required(),
+    year: Joi.string().required(),
+    gender: Joi.string().valid("male", "female").required(),
+  });
+  return schema.validate(user);
+};
 
 const User = mongoose.model("user", userSchema);
 
-module.exports = {User, validate};
+module.exports = { User, validate };
